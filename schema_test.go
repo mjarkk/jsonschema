@@ -101,7 +101,7 @@ func TestFrom(t *testing.T) {
 			}{},
 			map[string]Property{
 				"A": {
-					Ref: "#/testing/HelpersSchemaNestedStruct",
+					Ref: "#/testing/Github.comMjarkkJsonschemaNestedStruct",
 				},
 			},
 			[]string{"A"},
