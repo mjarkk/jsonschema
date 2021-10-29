@@ -2,6 +2,36 @@
 
 This package can generate a json schema for a struct that is compatible with https://json-schema.org/
 
+```go
+type ExampleStruct struct {
+  Name string
+  Field []int
+  SomeOtherStruct OtherStruct
+}
+
+func main() {
+  defsMap := map[string]jsonschema.Property{}
+  schema, err := jsonschema.From(
+    ExampleStruct{},
+    "#/$defs/",
+    func(key string, value jsonschema.Property) {
+      defsMap[key] = value
+    },
+    func(key string) bool {
+      _, ok := defsMap[key]
+      return ok
+    },
+    nil,
+  )
+
+  if err != nil {
+    log.Fatal(err)
+  }
+
+  schema.Defs = defs
+}
+```
+
 Default applied rules:
 
 - A struct field is labeled as required when the data cannot be nil so `strings`,`bool`,`int`,`float`,`struct`, etc.. are required and types like `[]string`, `[8]int`, `*int`, `map[string]string` are not required. You can overwrite this behavior by using `jsonSchema` struct tag
