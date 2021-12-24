@@ -92,11 +92,11 @@ type Property struct {
 	Title       string              `json:"title,omitempty"`
 	Description string              `json:"description,omitempty"`
 	Type        PropertyType        `json:"type,omitempty"`  // The data type
-	Enum        []interface{}       `json:"enum,omitempty"`  // The value should validate againest one of these
+	Enum        []json.RawMessage   `json:"enum,omitempty"`  // The value should validate againest one of these
 	Const       interface{}         `json:"const,omitempty"` // Equal to a enum with 1 value
 	Deprecated  bool                `json:"deprecated,omitempty"`
 	Default     interface{}         `json:"default,omitempty"`
-	Examples    []interface{}       `json:"examples,omitempty"`
+	Examples    []json.RawMessage   `json:"examples,omitempty"`
 	Format      Format              `json:"format,omitempty"`
 	Ref         string              `json:"$ref,omitempty"`
 	Defs        map[string]Property `json:"$defs,omitempty"`
