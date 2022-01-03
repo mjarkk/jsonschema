@@ -172,3 +172,81 @@ func TestFrom(t *testing.T) {
 		})
 	}
 }
+
+type CustomField struct{}
+
+var customFieldJSONDescription = Property{
+	Title: "custom field",
+	Type:  PropertyTypeString,
+}
+
+func (CustomField) JSONSchemaDescribe() Property {
+	return customFieldJSONDescription
+}
+
+func TestJSONSchemaDescribe(t *testing.T) {
+	property, err := From(
+		struct{ customField CustomField }{},
+		"#/testing/",
+		func(key string, property Property) {},
+		func(key string) bool { return true },
+		nil,
+	)
+	NoError(t, err)
+	Equal(t, map[string]Property{"customField": customFieldJSONDescription}, property.Properties)
+	Equal(t, []string{"customField"}, property.Required)
+
+	// Test if enums work
+	customFieldJSONDescription.Enum = []json.RawMessage{[]byte("\"foo\""), []byte("\"bar\"")}
+	property, err = From(
+		struct{ customField CustomField }{},
+		"#/testing/",
+		func(key string, property Property) {},
+		func(key string) bool { return true },
+		nil,
+	)
+	NoError(t, err)
+	Equal(t, map[string]Property{"customField": customFieldJSONDescription}, property.Properties)
+	Equal(t, []string{"customField"}, property.Required)
+	customFieldJSONDescription.Enum = nil
+
+	// Test if examples work
+	customFieldJSONDescription.Examples = []json.RawMessage{[]byte("\"foo\""), []byte("\"bar\"")}
+	property, err = From(
+		struct{ customField CustomField }{},
+		"#/testing/",
+		func(key string, property Property) {},
+		func(key string) bool { return true },
+		nil,
+	)
+	NoError(t, err)
+	Equal(t, map[string]Property{"customField": customFieldJSONDescription}, property.Properties)
+	Equal(t, []string{"customField"}, property.Required)
+	customFieldJSONDescription.Examples = nil
+
+	// Test if panics on invalid enum (the enum is not valid JSON)
+	customFieldJSONDescription.Enum = []json.RawMessage{[]byte("foo"), []byte("bar")}
+	Panics(t, func() {
+		From(
+			struct{ customField CustomField }{},
+			"#/testing/",
+			func(key string, property Property) {},
+			func(key string) bool { return true },
+			nil,
+		)
+	}, "example should panic because of invalid json in enum")
+	customFieldJSONDescription.Enum = nil
+
+	// Test if panics on invalid enum (the enum is not valid JSON)
+	customFieldJSONDescription.Examples = []json.RawMessage{[]byte("foo"), []byte("bar")}
+	Panics(t, func() {
+		From(
+			struct{ customField CustomField }{},
+			"#/testing/",
+			func(key string, property Property) {},
+			func(key string) bool { return true },
+			nil,
+		)
+	}, "example should panic because of invalid json in example")
+	customFieldJSONDescription.Examples = nil
+}

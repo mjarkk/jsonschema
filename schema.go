@@ -3,6 +3,7 @@ package jsonschema
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -332,6 +333,34 @@ func parseType(
 		if !ok {
 			panic("method " + methodName + " did not return the expected value type")
 		}
+
+		// Validate the json.RawMessage fields
+		if len(property.Enum) != 0 {
+			for idx, field := range property.Enum {
+				if !json.Valid(field) {
+					panic(fmt.Sprintf(
+						"%s.%s.JSONSchemaDescribe() returned contains an invalid enum value at index %d",
+						t.PkgPath(),
+						t.Name(),
+						idx,
+					))
+				}
+			}
+		}
+
+		if len(property.Examples) != 0 {
+			for idx, field := range property.Examples {
+				if !json.Valid(field) {
+					panic(fmt.Sprintf(
+						"%s.%s.JSONSchemaDescribe() returned contains an invalid example value at index %d",
+						t.PkgPath(),
+						t.Name(),
+						idx,
+					))
+				}
+			}
+		}
+
 		return property, required, false
 	}
 
