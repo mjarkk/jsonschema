@@ -32,17 +32,17 @@ func main() {
 }
 ```
 
-Default applied rules:
+### Default applied rules:
 
-- A struct field is labeled as required when the data cannot be nil so `strings`,`bool`,`int`,`float`,`struct`, etc.. are required and types like `[]string`, `[8]int`, `*int`, `map[string]string` are not required. You can overwrite this behavior by using `jsonSchema` struct tag
+- A struct field is labeled as required when the data cannot be nil *so `strings`,`bool`,`int`,`float`,`struct`, etc.. are required and `[]string`, `[8]int`, `*int`, `map[string]string` are not required. You can overwrite this behavior by using `jsonSchema` struct tag*
 
-Supported struct tags:
+### Supported struct tags:
 
 - `json:`
   - `"-"` Ignores the field
   - `"other_name"` Renames the field
 - `jsonSchema:`
-  - `"notRequired"` Set the field are not required (by default all fields with the exeption of `ptr`, `array`, `slice` and `map` are set as required)
+  - `"notRequired"` Set the field are not required *(by default all fields with the exeption of `ptr`, `array`, `slice` and `map` are set as required)*
   - `"required"` Set the field as required
   - `"deprecated"` Mark the field as deprecated
   - `"uniqueItems"` Every array entry must be unique _(Only for arrays)_
@@ -51,3 +51,27 @@ Supported struct tags:
   - `"max=123"` Set the maximum value or array length for the field
 
 You can also chain jsonSchema tags using `,` for example: `jsonSchema:"notRequired,deprecated"`
+
+### Custom (Un)MarshalJSON
+
+Sometimes you might want to define a custom schema for a type that implements the `MarshalJSON` and `UnmarshalJSON` methods.
+
+You can define a custom definition like so:
+
+```go
+var PhoneNumber string
+
+func (PhoneNumber) JSONSchemaDescribe() jsonschema.Property {
+	minLen := uint(3)
+	return jsonschema.Property{
+		Title:       "Phone number",
+		Description: "This field can contain any kind phone number",
+		Type:        jsonschema.PropertyTypeString,
+		Examples: []json.RawMessage{
+			[]byte("\"06 12345678\""),
+			[]byte("\"+31 6 1234 5678\""),
+		},
+		MinLength: &minLen,
+	}
+}
+```
