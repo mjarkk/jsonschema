@@ -156,6 +156,16 @@ func TestFrom(t *testing.T) {
 			},
 			[]string{"B", "A"},
 		},
+		{
+			"description",
+			struct {
+				A string `description:"do me one of those descriptions"`
+			}{},
+			map[string]Property{
+				"A": {Type: PropertyTypeString, Description: "do me one of those descriptions"},
+			},
+			[]string{"A"},
+		},
 	}
 	for _, s := range scenarios {
 		t.Run(s.name, func(t *testing.T) {

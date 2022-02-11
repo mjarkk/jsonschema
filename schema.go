@@ -214,6 +214,7 @@ fieldsLoop:
 			name = customName
 		}
 
+		description := strings.TrimSpace(field.Tag.Get("description"))
 		argRequired := false
 		argNotRequired := false
 		argDeprecated := false
@@ -281,6 +282,8 @@ fieldsLoop:
 		if argUniqueItems && property.Type == PropertyTypeArray {
 			property.UniqueItems = true
 		}
+		property.Description = description
+
 		switch property.Type {
 		case PropertyTypeInteger, PropertyTypeNumber:
 			if min != nil {

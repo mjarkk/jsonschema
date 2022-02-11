@@ -49,6 +49,7 @@ func main() {
   - `"hidden"` Do not expose field in the schema
   - `"min=123"` Set the minimum value or array length for the field
   - `"max=123"` Set the maximum value or array length for the field
+- `description:"describe a property here"` Set the description property
 
 You can also chain jsonSchema tags using `,` for example: `jsonSchema:"notRequired,deprecated"`
 
